@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.zeus.official.app-mergeDebugResources-24:/values-v29/values-v29.xml",
+            "map": [
+                {
+                    "source": "/data/data/com.termux/files/home/.gradle/caches/8.14.3/transforms/b7604f0fe8d97d9097bdc10ff6d9ba79/transformed/jetified-core-splashscreen-1.0.1/res/values-v29/values-v29.xml",
+                    "from": {
+                        "startLines": "2,7",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,374",
+                        "endLines": "6,8",
+                        "endColumns": "12,12",
+                        "endOffsets": "369,464"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+	"appId": "com.zeus.official.app.app",
+	"appName": "Zeus",
+	"webDir": "www",
+	"plugins": {
+		"AdMob": {
+			"appId": "ca-app-pub-9263059352539297~7924297095"
+		}
+	}
+}

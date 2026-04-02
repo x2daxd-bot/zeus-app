@@ -1,0 +1,19 @@
+#Thu Apr 02 00:28:39 GMT 2026
+base.0=/data/data/com.termux/files/home/zeus-new/android/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
+base.1=/data/data/com.termux/files/home/zeus-new/android/app/build/intermediates/dex/debug/mergeLibDexDebug/2/classes.dex
+base.2=/data/data/com.termux/files/home/zeus-new/android/app/build/intermediates/dex/debug/mergeLibDexDebug/5/classes.dex
+base.3=/data/data/com.termux/files/home/zeus-new/android/app/build/intermediates/dex/debug/mergeLibDexDebug/8/classes.dex
+base.4=/data/data/com.termux/files/home/zeus-new/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+base.5=/data/data/com.termux/files/home/zeus-new/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/1/classes.dex
+path.0=classes.dex
+path.1=2/classes.dex
+path.2=5/classes.dex
+path.3=8/classes.dex
+path.4=0/classes.dex
+path.5=1/classes.dex
+renamed.0=classes.dex
+renamed.1=classes2.dex
+renamed.2=classes3.dex
+renamed.3=classes4.dex
+renamed.4=classes5.dex
+renamed.5=classes6.dex
