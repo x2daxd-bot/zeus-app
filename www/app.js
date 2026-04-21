@@ -18,7 +18,7 @@ window.onerror = function(msg, url, line) {
 };
 const EDGE_NODES = ["us-east.zeus.app", "eu-west.zeus.app", "asia-south.zeus.app"];
 const CURRENT_NODE = EDGE_NODES[Math.floor(Math.random() * EDGE_NODES.length)];
-const _0xzeus = ["0e538b02c5ce3325114150f1f0399cae"]; const API_KEY = _0xzeus[0];
+const _0xzeus = ["0e538b02c5ce3325114150f1f0399cae"]; const API_KEY = "0e538b02c5ce3325114150f1f0399cae";
 // 🟢 تهيئة Firebase (سيرفر الاشتراكات وقاعدة البيانات الحقيقية)
 // يرجى استبدال هذه البيانات ببيانات مشروعك في Firebase لتخزين بيانات المشتركين بجدية
 const firebaseConfig = {
@@ -35,10 +35,10 @@ if (typeof firebase !== 'undefined') {
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
 }
-let _z2 = JSON.parse(localStorage.getItem("zeus__z2")) || [];
-let _z3 = JSON.parse(localStorage.getItem("zeus_continue")) || [];
+let favorites = JSON.parse(localStorage.getItem("zeus_favorites")) || [];
+let continueWatching = JSON.parse(localStorage.getItem("zeus_continue")) || [];
 let myRatings = JSON.parse(localStorage.getItem("zeus_ratings")) || {};
-let _z1 = JSON.parse(localStorage.getItem("zeus_user")) || null; 
+let currentUser = JSON.parse(localStorage.getItem("zeus_user")) || null; 
 let searchTimeout;
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -207,7 +207,7 @@ function playLiveStream(name, url) {
 }
 function playRandomMovie() {
     const url = `https://${CURRENT_NODE}/3/trending/all/week?api_key=${API_KEY}`;
-fetch(url).catch(() => fetch(url.replace("${CURRENT_NODE}", "backup-api.zeus.app")))
+    fetch(url).then(res => res.json()).then(data => {
         const randomIndex = Math.floor(Math.random() * data.results.length);
         openMovie(data.results[randomIndex].id, data.results[randomIndex].media_type);
     });
@@ -239,7 +239,7 @@ function liveSearch(query) {
     if (!query.trim()) { resultsDiv.innerHTML = ''; errorState.style.display = 'none'; return; }
     searchTimeout = setTimeout(() => {
         const url = `https://${CURRENT_NODE}/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=ar`;
-fetch(url).catch(() => fetch(url.replace("${CURRENT_NODE}", "backup-api.zeus.app")))
+    fetch(url).then(res => res.json()).then(data => {
             resultsDiv.innerHTML = '';
             if(data.results.length === 0) errorState.style.display = 'flex';
             else {
@@ -258,33 +258,33 @@ fetch(url).catch(() => fetch(url.replace("${CURRENT_NODE}", "backup-api.zeus.app
     }, 500); 
 }
 function toggleFavoritesView() {
-    document.getElementById('_z2Section').classList.toggle('hidden');
+    document.getElementById('favoritesSection').classList.toggle('hidden');
     loadFavoritesUI();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function toggleFavoriteItem(id, type, title, poster) {
-    const index = _z2.findIndex(f => f.id === id);
+    const index = favorites.findIndex(f => f.id === id);
     if (index === -1) {
-        _z2.push({ id, type, title, poster });
+        favorites.push({ id, type, title, poster });
         showToast("تمت الإضافة إلى المفضلة ❤️");
     } else {
-        _z2.splice(index, 1);
+        favorites.splice(index, 1);
         showToast("تمت الإزالة من المفضلة 🗑️");
     }
-    localStorage.setItem("zeus__z2", JSON.stringify(_z2));
+    localStorage.setItem("zeus_favorites", JSON.stringify(favorites));
     updateHeartIconStatus();
     loadFavoritesUI();
 }
 function updateHeartIconStatus() {
     const heartIcon = document.getElementById('bottomHeartIcon');
-    if (_z2.length > 0) heartIcon.classList.add('active');
+    if (favorites.length > 0) heartIcon.classList.add('active');
     else heartIcon.classList.remove('active');
 }
 function loadFavoritesUI() {
-    const row = document.getElementById('_z2Row');
+    const row = document.getElementById('favoritesRow');
     row.innerHTML = '';
-    if (_z2.length === 0) return row.innerHTML = '<p style="color:#666; font-size:12px;">المفضلة فارغة.</p>';
-    _z2.forEach(item => {
+    if (favorites.length === 0) return row.innerHTML = '<p style="color:#666; font-size:12px;">المفضلة فارغة.</p>';
+    favorites.forEach(item => {
         const card = document.createElement('div');
         card.className = 'movie-card';
         card.onclick = () => openMovie(item.id, item.type);
@@ -294,7 +294,7 @@ function loadFavoritesUI() {
 }
 function loadHero() {
     const url = `https://${CURRENT_NODE}/3/trending/all/day?api_key=${API_KEY}&language=ar`;
-fetch(url).catch(() => fetch(url.replace("${CURRENT_NODE}", "backup-api.zeus.app")))
+    fetch(url).then(res => res.json()).then(data => {
         const item = data.results[0];
         const hero = document.getElementById('heroSection');
         hero.style.backgroundImage = `url('https://image.tmdb.org/t/p/original${item.backdrop_path}')`;
@@ -325,7 +325,7 @@ function loadGenreRow(type, genreId, title, extraParams = '') {
     container.appendChild(rowDiv);
     const genreQuery = genreId ? `&with_genres=${genreId}` : '';
     const url = `https://${CURRENT_NODE}/3/discover/${type}?api_key=${API_KEY}${genreQuery}&language=ar${extraParams}`;
-fetch(url).catch(() => fetch(url.replace("${CURRENT_NODE}", "backup-api.zeus.app")))
+    fetch(url).then(res => res.json()).then(data => {
         rowDiv.innerHTML = ''; 
         if(data.results) {
             data.results.forEach(m => {
@@ -368,7 +368,7 @@ function openMovie(id, type) {
     modal.style.display = "flex";
     modalBody.innerHTML = "<div class='loader'></div>";
     const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=ar&append_to_response=videos,credits`;
-    fetch(url).then(res => res.json()).then(item => {
+    fetch(url).then(res => res.json()).then(data => {
         renderMovieDetails(item, type);
         // إضافة العداد الذكي الذي طلبته
         setTimeout(() => { if(document.getElementById("viewersCount")) document.getElementById("viewersCount").innerText = Math.floor(Math.random() * 450) + 50; }, 500);
@@ -399,7 +399,7 @@ function openMovie(id, type) {
     document.body.style.overflow = 'hidden';
     showModalSkeleton();
     addToContinueWatching(id, type, 1, 1); 
-    const savedProgress = _z3.find(item => item.id === id);
+    const savedProgress = continueWatching.find(item => item.id === id);
     const startSeason = savedProgress && savedProgress.season ? savedProgress.season : 1;
     const startEpisode = savedProgress && savedProgress.episode ? savedProgress.episode : 1;
     const detailsUrl = `https://${CURRENT_NODE}/3/${type}/${id}?api_key=${API_KEY}&language=ar&append_to_response=videos`;
@@ -411,7 +411,7 @@ function openMovie(id, type) {
             const backdrop = details.backdrop_path ? `https://image.tmdb.org/t/p/original${details.backdrop_path}` : '';
             const poster = details.poster_path ? ``https://image.tmdb.org/t/p/${navigator.connection.saveData ? "w200" : "w500"}`${details.poster_path}` : '';
             const title = details.title || details.name;
-            const isFav = _z2.some(f => f.id === id);
+            const isFav = favorites.some(f => f.id === id);
             const userRate = myRatings[id] || 0;
             const safeTitle = title.replace(/'/g, "\\'").replace(/"/g, '\\"');
             updateSEOMeta(title, details.overview || '', poster);
@@ -591,18 +591,18 @@ function closeMovie() {
     document.title = "ZEUS - عالم الأفلام والمسلسلات";
 }
 function addToContinueWatching(id, type, season = 1, episode = 1) {
-    _z3 = _z3.filter(item => item.id !== id);
-    _z3.unshift({ id, type, season, episode });
-    if (_z3.length > 8) _z3.pop();
-    localStorage.setItem("zeus_continue", JSON.stringify(_z3));
+    continueWatching = continueWatching.filter(item => item.id !== id);
+    continueWatching.unshift({ id, type, season, episode });
+    if (continueWatching.length > 8) continueWatching.pop();
+    localStorage.setItem("zeus_continue", JSON.stringify(continueWatching));
     loadContinueWatching();
 }
 function loadContinueWatching() {
     const row = document.getElementById('continueRow');
-    if (_z3.length === 0) return;
+    if (continueWatching.length === 0) return;
     document.getElementById('continueSection').classList.remove('hidden');
     row.innerHTML = '';
-    _z3.forEach(item => {
+    continueWatching.forEach(item => {
         fetch(`https://${CURRENT_NODE}/3/${item.type}/${item.id}?api_key=${API_KEY}&language=ar`).then(res => res.json()).then(data => {
             const card = document.createElement('div');
             card.className = 'movie-card';
@@ -699,14 +699,14 @@ function handleLogin() {
     let users = JSON.parse(localStorage.getItem("zeus_users")) || [];
     const user = users.find(u => u.email === email && u.pass === pass);
     if(user) {
-        _z1 = { email: user.email, name: user.name, isSubscribed: false, tier: 'free' };
-        localStorage.setItem("zeus_user", JSON.stringify(_z1));
+        currentUser = { email: user.email, name: user.name, isSubscribed: false, tier: 'free' };
+        localStorage.setItem("zeus_user", JSON.stringify(currentUser));
         closeMovie();
         updateAuthUI();
         showToast(`مرحباً بك يا ${user.name}! 🎉`);
     } else if (email === "admin@zeus.com" && pass === "admin") { 
-        _z1 = { email: email, name: "المدير", isSubscribed: true, tier: 'emerald' };
-        localStorage.setItem("zeus_user", JSON.stringify(_z1));
+        currentUser = { email: email, name: "المدير", isSubscribed: true, tier: 'emerald' };
+        localStorage.setItem("zeus_user", JSON.stringify(currentUser));
         closeMovie();
         updateAuthUI();
         showToast("تم الدخول كمدير! 🎉");
@@ -717,7 +717,7 @@ function handleLogin() {
 function updateAuthUI() {
     const userBtn = document.getElementById('userNavBtn');
     if(userBtn) {
-        userBtn.innerHTML = _z1 ? `<i class="fas fa-user-check"></i><span>${_z1.name}</span>` : `<i class="fas fa-user"></i><span>دخول</span>`;
+        userBtn.innerHTML = currentUser ? `<i class="fas fa-user-check"></i><span>${currentUser.name}</span>` : `<i class="fas fa-user"></i><span>دخول</span>`;
     }
 }
 // 🟢 تمت إضافة الـ JS الخاص بنافذة الإعدادات وربط Firebase
@@ -796,7 +796,7 @@ function handleSubscribeFirebase(tier, price) {
     // تنقية المدخلات لمنع حقن الكود
     tier = tier.replace(/[<>]/g, "");
     price = String(price).replace(/[<>]/g, "");
-    if (!_z1) {
+    if (!currentUser) {
         showToast("يرجى تسجيل الدخول أولاً لتتمكن من الاشتراك ⚠️");
         db.collection("funnel").add({step: "login_view"}); openLoginModal();
         return;
@@ -804,8 +804,8 @@ function handleSubscribeFirebase(tier, price) {
     if (typeof db !== 'undefined') {
     const encryptData = (text) => btoa(text.split("").reverse().join(""));
         db.collection("subscriptions").add({
-            userEmail: encryptData(_z1.email),
-            userName: encryptData(_z1.name),
+            userEmail: encryptData(currentUser.email),
+            userName: encryptData(currentUser.name),
             tier: tier,
             price: price,
             status: "pending",
@@ -840,7 +840,7 @@ if(localStorage.getItem("last_clean") < Date.now() - 86400000) { localStorage.cl
 document.getElementById("voiceBtn").onclick = () => { const rec = new webkitSpeechRecognition(); rec.lang = "ar-SA"; rec.onresult = (e) => { searchInput.value = e.results[0][0].transcript; searchMovies(searchInput.value); }; rec.start(); };
 document.getElementById("trap").addEventListener("click", (e) => { e.preventDefault(); alert("System Breach Detected!"); window.location.href="about:blank"; });
 let lastTime = performance.now(); let frames = 0; function updateFPS() { frames++; let now = performance.now(); if(now >= lastTime + 1000) { document.getElementById("fps-monitor").innerText = frames + " FPS"; frames = 0; lastTime = now; } requestAnimationFrame(updateFPS); } updateFPS();
-function exportZFiles() { const data = localStorage.getItem("zeus__z2"); const blob = new Blob([data], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "zeus_backup.json"; a.click(); }
+function exportZFiles() { const data = localStorage.getItem("zeus_favorites"); const blob = new Blob([data], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "zeus_backup.json"; a.click(); }
 if(navigator.getBattery) { navigator.getBattery().then(b => { if(b.level < 0.2) document.body.classList.add("low-battery"); }); }
 const messaging = firebase.messaging(); messaging.requestPermission().then(() => messaging.getToken()).then((t) => console.log("Token:", t)); messaging.onMessage((p) => { showToast("📣 " + p.notification.body); });
 window.addEventListener("keydown", (e) => {
