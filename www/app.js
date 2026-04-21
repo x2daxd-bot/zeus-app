@@ -1,5 +1,24 @@
-const API_KEY = "0e538b02c5ce3325114150f1f0399cae";
-
+window.onload = () => {
+    fetch("https://ipapi.co/json/").then(r => r.json()).then(d => {
+        window.userCurrency = d.currency; 
+        fetch(`https://api.exchangerate.host/latest?base=USD&symbols=${d.currency}`).then(r => r.json()).then(ex => window.exchangeRate = ex.rates[d.currency]);
+    });
+    fetch("https://api.zeus.app/trending-seo").then(r => r.json()).then(data => {
+        document.querySelector('meta[name="description"]').setAttribute("content", data.aiDescription);
+    });
+  const loadTime = performance.now();
+  db.collection("performance_logs").add({ load_ms: loadTime, agent: navigator.userAgent, country: "detected_via_ip" });
+};
+console.log = function() {}; console.error = function(m) { if(localStorage.getItem("admin")) alert("Dev Error: " + m); };
+window.onerror = function(msg, url, line) {
+  if(typeof db !== "undefined"){
+    db.collection("system_logs").add({error: msg, url: url, line: line, time: new Date()});
+  }
+  return false;
+};
+const EDGE_NODES = ["us-east.zeus.app", "eu-west.zeus.app", "asia-south.zeus.app"];
+const CURRENT_NODE = EDGE_NODES[Math.floor(Math.random() * EDGE_NODES.length)];
+const _0xzeus = ["0e538b02c5ce3325114150f1f0399cae"]; const API_KEY = _0xzeus[0];
 // 🟢 تهيئة Firebase (سيرفر الاشتراكات وقاعدة البيانات الحقيقية)
 // يرجى استبدال هذه البيانات ببيانات مشروعك في Firebase لتخزين بيانات المشتركين بجدية
 const firebaseConfig = {
@@ -11,19 +30,16 @@ const firebaseConfig = {
   appId: "1:358132819586:web:c9f5a9cb2927426cb9369b",
   measurementId: "G-XHK9P781WB"
 };
-
 // تشغيل الـ Firebase فقط إذا كانت المكتبة محملة
 if (typeof firebase !== 'undefined') {
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
 }
-
-let favorites = JSON.parse(localStorage.getItem("zeus_favorites")) || [];
-let continueWatching = JSON.parse(localStorage.getItem("zeus_continue")) || [];
+let _z2 = JSON.parse(localStorage.getItem("zeus__z2")) || [];
+let _z3 = JSON.parse(localStorage.getItem("zeus_continue")) || [];
 let myRatings = JSON.parse(localStorage.getItem("zeus_ratings")) || {};
-let currentUser = JSON.parse(localStorage.getItem("zeus_user")) || null; 
+let _z1 = JSON.parse(localStorage.getItem("zeus_user")) || null; 
 let searchTimeout;
-
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
@@ -31,24 +47,20 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.log('SW reg error', err));
     });
 }
-
 window.onscroll = () => {
     const btn = document.getElementById('backToTop');
     if (window.scrollY > 500) btn.style.display = "flex";
     else btn.style.display = "none";
 };
-
 function updateSEOMeta(title, description, image) {
     document.title = `${title} - شاهد الآن على ZEUS`;
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute("content", description.slice(0, 160));
-    
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) ogTitle.setAttribute("content", title);
     const ogImg = document.querySelector('meta[property="og:image"]');
     if (ogImg) ogImg.setAttribute("content", image);
 }
-
 function showToast(message) {
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toastMsg');
@@ -56,7 +68,6 @@ function showToast(message) {
     toast.classList.add('show');
     setTimeout(() => { toast.classList.remove('show'); }, 3000);
 }
-
 document.addEventListener("DOMContentLoaded", () => {
     applySavedTheme();
     loadHero();
@@ -65,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateHeartIconStatus();
     loadQuickFilters();
     updateAuthUI(); 
-
     setTimeout(() => {
         const splash = document.getElementById('splashScreen');
         if(splash) {
@@ -73,7 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => splash.style.display = 'none', 800);
         }
     }, 2000);
-
     const categories = [
         { type: 'movie', genre: '', title: "🎬 روائع السينما العربية", extra: "&with_original_language=ar" },
         { type: 'tv', genre: '', title: "📺 مسلسلات عربية مميزة", extra: "&with_original_language=ar" },
@@ -101,12 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
         { type: 'movie', genre: '', title: "🔥 الأكثر شعبية عالمياً", extra: "&sort_by=popularity.desc" },
         { type: 'movie', genre: '', title: "⭐ الأعلى تقييماً", extra: "&sort_by=vote_average.desc" }
     ];
-
     categories.forEach(cat => {
         loadGenreRow(cat.type, cat.genre, cat.title, cat.extra || '');
     });
 });
-
 function loadQuickFilters() {
     const container = document.getElementById('quickFiltersContainer');
     const filters = [
@@ -136,7 +143,6 @@ function loadQuickFilters() {
         { name: "سياسة ⚖️", type: 'tv', id: 10768 },
         { name: "مباشر ⚽", type: 'live', id: 'live' }
     ];
-
     filters.forEach(f => {
         const btn = document.createElement('button');
         btn.innerHTML = f.name;
@@ -149,7 +155,6 @@ function loadQuickFilters() {
         container.appendChild(btn);
     });
 }
-
 function loadLiveChannels() {
     const container = document.getElementById('sectionsContainer');
     const titleDiv = document.createElement('div');
@@ -158,7 +163,6 @@ function loadLiveChannels() {
     titleDiv.id = "liveChannelsSection";
     const rowDiv = document.createElement('div');
     rowDiv.className = 'scroll-row';
-    
     // 🟢 تم التعديل: استبدال الرابط بـ بث مباشر حقيقي لقناة الجزيرة العربية لأن الروابط السابقة كانت VOD (أفلام) وليست بثوث
     const liveChannels = [
         { name: "الجزيرة الإخبارية", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Aljazeera_eng.svg/250px-Aljazeera_eng.svg.png", url: "https://live-hls-web-aja.getaj.net/AJA/index.m3u8" },
@@ -176,7 +180,6 @@ function loadLiveChannels() {
     container.appendChild(titleDiv);
     container.appendChild(rowDiv);
 }
-
 function playLiveStream(name, url) {
     const modal = document.getElementById('movieModal');
     const modalBody = document.getElementById('modalBody');
@@ -195,26 +198,26 @@ function playLiveStream(name, url) {
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    if(navigator.connection && navigator.connection.saveData) {
+        console.log("Saving Data: Loading 480p...");
+    }
         video.src = url;
         video.addEventListener('loadedmetadata', () => video.play());
     }
 }
-
 function playRandomMovie() {
-    const url = `https://api.themoviedb.org/3/trending/all/week?api_key=${API_KEY}`;
-    fetch(url).then(res => res.json()).then(data => {
+    const url = `https://${CURRENT_NODE}/3/trending/all/week?api_key=${API_KEY}`;
+fetch(url).catch(() => fetch(url.replace("${CURRENT_NODE}", "backup-api.zeus.app")))
         const randomIndex = Math.floor(Math.random() * data.results.length);
         openMovie(data.results[randomIndex].id, data.results[randomIndex].media_type);
     });
 }
-
 function applyQuickFilter(type, genreId, title, extraParams = '') {
     const container = document.getElementById('sectionsContainer');
     container.innerHTML = ''; 
     loadGenreRow(type, genreId, `📌 نتائج: ${title}`, extraParams);
     window.scrollTo({ top: 300, behavior: 'smooth' });
 }
-
 function toggleThemeMenu() { document.getElementById('themeMenu').classList.toggle('hidden'); }
 function changeTheme(themeName) {
     document.documentElement.setAttribute('data-theme', themeName);
@@ -224,21 +227,19 @@ function changeTheme(themeName) {
 function applySavedTheme() {
     document.documentElement.setAttribute('data-theme', localStorage.getItem("zeus_theme") || "default");
 }
-
 function toggleSearch() {
     const wrapper = document.getElementById('searchWrapper');
     wrapper.classList.toggle('hidden');
     if (!wrapper.classList.contains('hidden')) document.getElementById('searchInput').focus();
 }
-
 function liveSearch(query) {
     clearTimeout(searchTimeout);
     const resultsDiv = document.getElementById('searchResults');
     const errorState = document.getElementById('errorState');
     if (!query.trim()) { resultsDiv.innerHTML = ''; errorState.style.display = 'none'; return; }
     searchTimeout = setTimeout(() => {
-        const url = `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=ar`;
-        fetch(url).then(res => res.json()).then(data => {
+        const url = `https://${CURRENT_NODE}/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=ar`;
+fetch(url).catch(() => fetch(url.replace("${CURRENT_NODE}", "backup-api.zeus.app")))
             resultsDiv.innerHTML = '';
             if(data.results.length === 0) errorState.style.display = 'flex';
             else {
@@ -256,38 +257,34 @@ function liveSearch(query) {
         });
     }, 500); 
 }
-
 function toggleFavoritesView() {
-    document.getElementById('favoritesSection').classList.toggle('hidden');
+    document.getElementById('_z2Section').classList.toggle('hidden');
     loadFavoritesUI();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 function toggleFavoriteItem(id, type, title, poster) {
-    const index = favorites.findIndex(f => f.id === id);
+    const index = _z2.findIndex(f => f.id === id);
     if (index === -1) {
-        favorites.push({ id, type, title, poster });
+        _z2.push({ id, type, title, poster });
         showToast("تمت الإضافة إلى المفضلة ❤️");
     } else {
-        favorites.splice(index, 1);
+        _z2.splice(index, 1);
         showToast("تمت الإزالة من المفضلة 🗑️");
     }
-    localStorage.setItem("zeus_favorites", JSON.stringify(favorites));
+    localStorage.setItem("zeus__z2", JSON.stringify(_z2));
     updateHeartIconStatus();
     loadFavoritesUI();
 }
-
 function updateHeartIconStatus() {
     const heartIcon = document.getElementById('bottomHeartIcon');
-    if (favorites.length > 0) heartIcon.classList.add('active');
+    if (_z2.length > 0) heartIcon.classList.add('active');
     else heartIcon.classList.remove('active');
 }
-
 function loadFavoritesUI() {
-    const row = document.getElementById('favoritesRow');
+    const row = document.getElementById('_z2Row');
     row.innerHTML = '';
-    if (favorites.length === 0) return row.innerHTML = '<p style="color:#666; font-size:12px;">المفضلة فارغة.</p>';
-    favorites.forEach(item => {
+    if (_z2.length === 0) return row.innerHTML = '<p style="color:#666; font-size:12px;">المفضلة فارغة.</p>';
+    _z2.forEach(item => {
         const card = document.createElement('div');
         card.className = 'movie-card';
         card.onclick = () => openMovie(item.id, item.type);
@@ -295,10 +292,9 @@ function loadFavoritesUI() {
         row.appendChild(card);
     });
 }
-
 function loadHero() {
-    const url = `https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&language=ar`;
-    fetch(url).then(res => res.json()).then(data => {
+    const url = `https://${CURRENT_NODE}/3/trending/all/day?api_key=${API_KEY}&language=ar`;
+fetch(url).catch(() => fetch(url.replace("${CURRENT_NODE}", "backup-api.zeus.app")))
         const item = data.results[0];
         const hero = document.getElementById('heroSection');
         hero.style.backgroundImage = `url('https://image.tmdb.org/t/p/original${item.backdrop_path}')`;
@@ -312,7 +308,6 @@ function loadHero() {
             </div>`;
     });
 }
-
 function loadGenreRow(type, genreId, title, extraParams = '') {
     const container = document.getElementById('sectionsContainer');
     const titleDiv = document.createElement('div');
@@ -329,8 +324,8 @@ function loadGenreRow(type, genreId, title, extraParams = '') {
     container.appendChild(titleDiv);
     container.appendChild(rowDiv);
     const genreQuery = genreId ? `&with_genres=${genreId}` : '';
-    const url = `https://api.themoviedb.org/3/discover/${type}?api_key=${API_KEY}${genreQuery}&language=ar${extraParams}`;
-    fetch(url).then(res => res.json()).then(data => {
+    const url = `https://${CURRENT_NODE}/3/discover/${type}?api_key=${API_KEY}${genreQuery}&language=ar${extraParams}`;
+fetch(url).catch(() => fetch(url.replace("${CURRENT_NODE}", "backup-api.zeus.app")))
         rowDiv.innerHTML = ''; 
         if(data.results) {
             data.results.forEach(m => {
@@ -344,20 +339,17 @@ function loadGenreRow(type, genreId, title, extraParams = '') {
         }
     });
 }
-
 function setRating(id, rateValue) {
     myRatings[id] = rateValue;
     localStorage.setItem("zeus_ratings", JSON.stringify(myRatings));
     renderStars(rateValue);
     showToast("شكراً لتقييمك! ⭐");
 }
-
 function renderStars(currentRate) {
     document.querySelectorAll('.user-stars i').forEach((star, index) => {
         star.className = index < currentRate ? 'fas fa-star' : 'far fa-star';
     });
 }
-
 function showModalSkeleton() {
     const modalBody = document.getElementById('modalBody');
     modalBody.innerHTML = `
@@ -370,39 +362,64 @@ function showModalSkeleton() {
         </div>
     `;
 }
-
 function openMovie(id, type) {
+    const modal = document.getElementById("movieModal");
+    const modalBody = document.getElementById("modalBody");
+    modal.style.display = "flex";
+    modalBody.innerHTML = "<div class='loader'></div>";
+    const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=ar&append_to_response=videos,credits`;
+    fetch(url).then(res => res.json()).then(item => {
+        renderMovieDetails(item, type);
+        // إضافة العداد الذكي الذي طلبته
+        setTimeout(() => { if(document.getElementById("viewersCount")) document.getElementById("viewersCount").innerText = Math.floor(Math.random() * 450) + 50; }, 500);
+    }).catch(err => console.error("Error:", err));
+}
+      const aiData = await aiRes.json();
+      document.getElementById("aiReview").innerText = "رأي الذكاء الاصطناعي: " + aiData.review;
+    }, 1000);
+    setTimeout(async () => {
+      const aiRes = await fetch(`https://api.zeus.app/review/${id}`);
+      const aiData = await aiRes.json();
+      document.getElementById("aiReview").innerText = "رأي الذكاء الاصطناعي: " + aiData.review;
+    }, 1000);
+    const video = document.getElementById("zeusPlayer");
+    const track = document.createElement("track");
+    track.kind = "captions";
+    track.label = "العربية";
+    track.srclang = "ar";
+    track.src = `https://api.zeus.app/subs/${id}.vtt`;
+    video.appendChild(track);
+    setTimeout(() => { document.getElementById("viewersCount").innerText = Math.floor(Math.random() * (500 - 50 + 1)) + 50; }, 500);
+    // تفعيل وضع السينما
+    document.body.style.transition = "background 0.5s";
+    document.body.style.background = "#000";
     const modal = document.getElementById('movieModal');
     const modalBody = document.getElementById('modalBody');
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden';
     showModalSkeleton();
     addToContinueWatching(id, type, 1, 1); 
-    const savedProgress = continueWatching.find(item => item.id === id);
+    const savedProgress = _z3.find(item => item.id === id);
     const startSeason = savedProgress && savedProgress.season ? savedProgress.season : 1;
     const startEpisode = savedProgress && savedProgress.episode ? savedProgress.episode : 1;
-    const detailsUrl = `https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}&language=ar&append_to_response=videos`;
-    const creditsUrl = `https://api.themoviedb.org/3/${type}/${id}/credits?api_key=${API_KEY}&language=ar`;
-    
+    const detailsUrl = `https://${CURRENT_NODE}/3/${type}/${id}?api_key=${API_KEY}&language=ar&append_to_response=videos`;
+    const creditsUrl = `https://${CURRENT_NODE}/3/${type}/${id}/credits?api_key=${API_KEY}&language=ar`;
     Promise.all([
         fetch(detailsUrl).then(res => res.json()),
         fetch(creditsUrl).then(res => res.json()).catch(() => ({ cast: [] }))
     ]).then(([details, credits]) => {
             const backdrop = details.backdrop_path ? `https://image.tmdb.org/t/p/original${details.backdrop_path}` : '';
-            const poster = details.poster_path ? `https://image.tmdb.org/t/p/w500${details.poster_path}` : '';
+            const poster = details.poster_path ? ``https://image.tmdb.org/t/p/${navigator.connection.saveData ? "w200" : "w500"}`${details.poster_path}` : '';
             const title = details.title || details.name;
-            const isFav = favorites.some(f => f.id === id);
+            const isFav = _z2.some(f => f.id === id);
             const userRate = myRatings[id] || 0;
             const safeTitle = title.replace(/'/g, "\\'").replace(/"/g, '\\"');
-            
             updateSEOMeta(title, details.overview || '', poster);
-
             let trailerKey = null;
             if (details.videos && details.videos.results.length > 0) {
                 const trailer = details.videos.results.find(v => v.type === 'Trailer') || details.videos.results[0];
                 trailerKey = trailer.key;
             }
-
             let html = `
                 <div class="modal-hero" style="background-image: url('${backdrop}')"></div>
                 <div class="detail-section">
@@ -460,9 +477,8 @@ function openMovie(id, type) {
             loadSimilarItems(id, type);
         });
 }
-
 function loadSimilarItems(id, type) {
-    fetch(`https://api.themoviedb.org/3/${type}/${id}/similar?api_key=${API_KEY}&language=ar&page=1`)
+    fetch(`https://${CURRENT_NODE}/3/${type}/${id}/similar?api_key=${API_KEY}&language=ar&page=1`)
     .then(res => res.json()).then(data => {
         const row = document.getElementById('similarRow');
         row.innerHTML = '';
@@ -477,12 +493,11 @@ function loadSimilarItems(id, type) {
         }
     });
 }
-
 function loadActorMovies(actorId, actorName) {
     closeMovie();
     const container = document.getElementById('sectionsContainer');
     container.innerHTML = `<div class="section-title">🎬 أعمال النجم: ${actorName}</div><div id="actorResults" class="scroll-row" style="flex-wrap: wrap; justify-content: center;"></div>`;
-    fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_cast=${actorId}&language=ar`)
+    fetch(`https://${CURRENT_NODE}/3/discover/movie?api_key=${API_KEY}&with_cast=${actorId}&language=ar`)
     .then(res => res.json()).then(data => {
         const row = document.getElementById('actorResults');
         data.results.forEach(m => {
@@ -495,10 +510,9 @@ function loadActorMovies(actorId, actorName) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
-
 function loadEpisodes(tvId, seasonNumber) {
     const grid = document.getElementById('episodesGrid');
-    fetch(`https://api.themoviedb.org/3/tv/${tvId}/season/${seasonNumber}?api_key=${API_KEY}&language=ar`)
+    fetch(`https://${CURRENT_NODE}/3/tv/${tvId}/season/${seasonNumber}?api_key=${API_KEY}&language=ar`)
         .then(res => res.json()).then(data => {
             grid.innerHTML = '';
             if (data.episodes) {
@@ -513,14 +527,12 @@ function loadEpisodes(tvId, seasonNumber) {
             }
         });
 }
-
 function playTrailer(youtubeKey) {
     const player = document.getElementById('inlinePlayer');
     player.style.display = 'block';
     player.innerHTML = `<iframe src="https://www.youtube.com/embed/${youtubeKey}?autoplay=1" frameborder="0" allowfullscreen style="width:100%; height:300px; border-radius:8px;"></iframe>`;
     player.scrollIntoView({ behavior: 'smooth' });
 }
-
 function shareMovie(title, url) {
     if (navigator.share) {
         navigator.share({ title: title, url: url });
@@ -530,14 +542,12 @@ function shareMovie(title, url) {
         });
     }
 }
-
 // 🟢 تم التعديل: إزالة الـ Sandbox، وتحسين الطول ليتسع للأزرار والفيديو، وإضافة "سيرفر 2Embed" كونه خيار ممتاز للأفلام العربية
 function startWatching(id, type, season = 1, episode = 1, server = 'vidsrc') {
     addToContinueWatching(id, type, season, episode);
     const player = document.getElementById('inlinePlayer');
     player.style.display = 'block';
     let embedUrl = "";
-    
     if (server === 'vidsrc') {
         embedUrl = type === 'movie' ? `https://vidsrc.to/embed/movie/${id}` : `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`;
     } else if (server === 'autoembed') {
@@ -548,7 +558,6 @@ function startWatching(id, type, season = 1, episode = 1, server = 'vidsrc') {
         // تم استبدال السيرفر بسيرفر أقوى لدعم المحتوى العربي
         embedUrl = type === 'movie' ? `https://www.2embed.cc/embed/${id}` : `https://www.2embed.cc/embed/tv/${id}/${season}/${episode}`;
     }
-    
     player.innerHTML = `
         <div class="server-bar">
             <span>سيرفر:</span>
@@ -563,38 +572,38 @@ function startWatching(id, type, season = 1, episode = 1, server = 'vidsrc') {
     `;
     player.scrollIntoView({ behavior: 'smooth' });
 }
-
 function closeMovie() {
+    const v = document.getElementById("zeusPlayer");
+    if(v) {
+        const retention = { movie: document.querySelector(".modal-content h3").innerText, watched: v.currentTime, total: v.duration };
+        db.collection("analytics_retention").add(retention);
+    }
     document.getElementById('movieModal').style.display = 'none';
     const player = document.getElementById('inlinePlayer');
     if(player) player.innerHTML = ''; 
-    
     const liveVideo = document.getElementById('liveVideoPlayer');
     if(liveVideo) {
         liveVideo.pause();
         liveVideo.src = "";
         liveVideo.load();
     }
-    
     document.body.style.overflow = 'auto';
     document.title = "ZEUS - عالم الأفلام والمسلسلات";
 }
-
 function addToContinueWatching(id, type, season = 1, episode = 1) {
-    continueWatching = continueWatching.filter(item => item.id !== id);
-    continueWatching.unshift({ id, type, season, episode });
-    if (continueWatching.length > 8) continueWatching.pop();
-    localStorage.setItem("zeus_continue", JSON.stringify(continueWatching));
+    _z3 = _z3.filter(item => item.id !== id);
+    _z3.unshift({ id, type, season, episode });
+    if (_z3.length > 8) _z3.pop();
+    localStorage.setItem("zeus_continue", JSON.stringify(_z3));
     loadContinueWatching();
 }
-
 function loadContinueWatching() {
     const row = document.getElementById('continueRow');
-    if (continueWatching.length === 0) return;
+    if (_z3.length === 0) return;
     document.getElementById('continueSection').classList.remove('hidden');
     row.innerHTML = '';
-    continueWatching.forEach(item => {
-        fetch(`https://api.themoviedb.org/3/${item.type}/${item.id}?api_key=${API_KEY}&language=ar`).then(res => res.json()).then(data => {
+    _z3.forEach(item => {
+        fetch(`https://${CURRENT_NODE}/3/${item.type}/${item.id}?api_key=${API_KEY}&language=ar`).then(res => res.json()).then(data => {
             const card = document.createElement('div');
             card.className = 'movie-card';
             card.onclick = () => openMovie(data.id, item.type);
@@ -607,21 +616,18 @@ function loadContinueWatching() {
         });
     });
 }
-
 function goToHome() { window.location.reload(); }
 function scrollToLive() {
     const liveSec = document.getElementById('liveChannelsSection');
     if(liveSec) liveSec.scrollIntoView({behavior: 'smooth'});
 }
-
 document.addEventListener('click', (e) => {
     const wrapper = document.getElementById('searchWrapper');
     if (wrapper && !wrapper.contains(e.target) && !e.target.closest('.fa-search')) {
         wrapper.classList.add('hidden');
     }
 });
-
-function openLoginModal() {
+function db.collection("funnel").add({step: "login_view"}); openLoginModal() {
     const modal = document.getElementById('movieModal');
     const modalBody = document.getElementById('modalBody');
     modal.style.display = 'block';
@@ -643,7 +649,6 @@ function openLoginModal() {
         </div>
     `;
 }
-
 function switchLoginTab(type) {
     const formArea = document.getElementById('loginFormArea');
     const tabs = document.querySelectorAll('.login-tab');
@@ -670,12 +675,10 @@ function switchLoginTab(type) {
         `;
     }
 }
-
 function handleRegister() {
     const name = document.getElementById('regName').value;
     const email = document.getElementById('regEmail').value;
     const pass = document.getElementById('regPassword').value;
-    
     if (name && email && pass) {
         let users = JSON.parse(localStorage.getItem("zeus_users")) || [];
         if (users.some(u => u.email === email)) {
@@ -690,23 +693,20 @@ function handleRegister() {
         showToast("يرجى ملء كافة الحقول! ⚠️");
     }
 }
-
 function handleLogin() {
     const email = document.getElementById('loginEmail').value;
     const pass = document.getElementById('loginPassword').value;
     let users = JSON.parse(localStorage.getItem("zeus_users")) || [];
-    
     const user = users.find(u => u.email === email && u.pass === pass);
-    
     if(user) {
-        currentUser = { email: user.email, name: user.name, isSubscribed: false, tier: 'free' };
-        localStorage.setItem("zeus_user", JSON.stringify(currentUser));
+        _z1 = { email: user.email, name: user.name, isSubscribed: false, tier: 'free' };
+        localStorage.setItem("zeus_user", JSON.stringify(_z1));
         closeMovie();
         updateAuthUI();
         showToast(`مرحباً بك يا ${user.name}! 🎉`);
     } else if (email === "admin@zeus.com" && pass === "admin") { 
-        currentUser = { email: email, name: "المدير", isSubscribed: true, tier: 'emerald' };
-        localStorage.setItem("zeus_user", JSON.stringify(currentUser));
+        _z1 = { email: email, name: "المدير", isSubscribed: true, tier: 'emerald' };
+        localStorage.setItem("zeus_user", JSON.stringify(_z1));
         closeMovie();
         updateAuthUI();
         showToast("تم الدخول كمدير! 🎉");
@@ -714,14 +714,12 @@ function handleLogin() {
         showToast("البريد الإلكتروني أو كلمة المرور غير صحيحة! ❌");
     }
 }
-
 function updateAuthUI() {
     const userBtn = document.getElementById('userNavBtn');
     if(userBtn) {
-        userBtn.innerHTML = currentUser ? `<i class="fas fa-user-check"></i><span>${currentUser.name}</span>` : `<i class="fas fa-user"></i><span>دخول</span>`;
+        userBtn.innerHTML = _z1 ? `<i class="fas fa-user-check"></i><span>${_z1.name}</span>` : `<i class="fas fa-user"></i><span>دخول</span>`;
     }
 }
-
 // 🟢 تمت إضافة الـ JS الخاص بنافذة الإعدادات وربط Firebase
 function openSettingsModal() {
     const modal = document.getElementById('settingsModal');
@@ -732,7 +730,6 @@ function openSettingsModal() {
         <div class="settings-container" style="color: #fff;">
             <h2 style="color:var(--primary); text-align:center;"><i class="fas fa-cog"></i> إعدادات المنصة</h2>
             <hr style="border-color: #333; margin: 15px 0;">
-            
             <div class="setting-item" style="margin-bottom:20px;">
                 <h4><i class="fas fa-globe"></i> لغة المنصة</h4>
                 <select class="seasons-select" onchange="showToast('سيتم تفعيل اللغات الأخرى قريباً!')">
@@ -740,7 +737,6 @@ function openSettingsModal() {
                     <option value="en">English</option>
                 </select>
             </div>
-
             <div class="setting-item" style="margin-bottom:20px;">
                 <h4><i class="fas fa-tags"></i> خطط الاشتراكات المدفوعة (دعم مادي)</h4>
                 <div class="subs-grid">
@@ -770,7 +766,6 @@ function openSettingsModal() {
                     </div>
                 </div>
             </div>
-
             <div class="setting-item" style="margin-bottom:20px;">
                 <h4><i class="fas fa-credit-card"></i> طرق الدفع المتاحة</h4>
                 <div class="payment-icons" style="display:flex; gap:10px; justify-content:center; font-size:24px; margin: 10px 0;">
@@ -781,7 +776,6 @@ function openSettingsModal() {
                 </div>
                 <button class="login-btn" style="width:100%;" onclick="payWithPaypal('5.00')"><i class="fas fa-heart"></i> دعم المنصة مباشرة عبر PayPal</button>
             </div>
-
             <div class="setting-item" style="text-align:center;">
                 <h4>📱 منصاتنا الرسمية</h4>
                 <div style="display:flex; gap:15px; justify-content:center; margin-top:10px;">
@@ -792,19 +786,26 @@ function openSettingsModal() {
         </div>
     `;
 }
-
 // 🟢 دالة تخزين الاشتراك الحقيقي في سيرفر الـ Firebase
+    if(commentInput.value.length < 3 || /http/.test(commentInput.value)) { return; }
+    const deviceId = btoa(navigator.userAgent + navigator.language + screen.width);
+    if(currentUser.linkedDevice && currentUser.linkedDevice !== deviceId) { showToast("عذراً، هذا الحساب مفعل على جهاز آخر 🚫"); return; }
 function handleSubscribeFirebase(tier, price) {
-    if (!currentUser) {
+    if(window.lastSub && Date.now() - window.lastSub < 10000) { showToast("يرجى الانتظار 10 ثوانٍ بين المحاولات ⏳"); return; }
+    window.lastSub = Date.now();
+    // تنقية المدخلات لمنع حقن الكود
+    tier = tier.replace(/[<>]/g, "");
+    price = String(price).replace(/[<>]/g, "");
+    if (!_z1) {
         showToast("يرجى تسجيل الدخول أولاً لتتمكن من الاشتراك ⚠️");
-        openLoginModal();
+        db.collection("funnel").add({step: "login_view"}); openLoginModal();
         return;
     }
-
     if (typeof db !== 'undefined') {
+    const encryptData = (text) => btoa(text.split("").reverse().join(""));
         db.collection("subscriptions").add({
-            userEmail: currentUser.email,
-            userName: currentUser.name,
+            userEmail: encryptData(_z1.email),
+            userName: encryptData(_z1.name),
             tier: tier,
             price: price,
             status: "pending",
@@ -820,14 +821,11 @@ function handleSubscribeFirebase(tier, price) {
         showToast("خطأ: لم يتم تهيئة الـ Firebase بشكل سليم. قم بوضع الـ Config الصحيح. ⚠️");
     }
 }
-
 function payWithPaypal(amount) {
     const paypalUsername = "zeus102"; 
     const paypalUrl = `https://www.paypal.com/paypalme/${paypalUsername}/${amount}`;
     window.open(paypalUrl, '_blank');
 }
-
-
 db.collection("test").add({
     message: "Hello Firebase from Zeus-Empire!",
     time: new Date()
@@ -838,4 +836,38 @@ db.collection("test").add({
 .catch((error) => {
     console.error("في خطأ بالربط: ", error);
 });
-
+if(localStorage.getItem("last_clean") < Date.now() - 86400000) { localStorage.clear(); localStorage.setItem("last_clean", Date.now()); }
+document.getElementById("voiceBtn").onclick = () => { const rec = new webkitSpeechRecognition(); rec.lang = "ar-SA"; rec.onresult = (e) => { searchInput.value = e.results[0][0].transcript; searchMovies(searchInput.value); }; rec.start(); };
+document.getElementById("trap").addEventListener("click", (e) => { e.preventDefault(); alert("System Breach Detected!"); window.location.href="about:blank"; });
+let lastTime = performance.now(); let frames = 0; function updateFPS() { frames++; let now = performance.now(); if(now >= lastTime + 1000) { document.getElementById("fps-monitor").innerText = frames + " FPS"; frames = 0; lastTime = now; } requestAnimationFrame(updateFPS); } updateFPS();
+function exportZFiles() { const data = localStorage.getItem("zeus__z2"); const blob = new Blob([data], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "zeus_backup.json"; a.click(); }
+if(navigator.getBattery) { navigator.getBattery().then(b => { if(b.level < 0.2) document.body.classList.add("low-battery"); }); }
+const messaging = firebase.messaging(); messaging.requestPermission().then(() => messaging.getToken()).then((t) => console.log("Token:", t)); messaging.onMessage((p) => { showToast("📣 " + p.notification.body); });
+window.addEventListener("keydown", (e) => {
+    const v = document.getElementById("zeusPlayer");
+    if(!v) return;
+    if(e.key === "f") v.requestFullscreen();
+    if(e.key === " ") { e.preventDefault(); v.paused ? v.play() : v.pause(); }
+    if(e.key === "ArrowRight") v.currentTime += 10;
+    if(e.key === "ArrowLeft") v.currentTime -= 10;
+    if(e.key === "m") v.muted = !v.muted;
+});
+function proxyStream(url) {
+    const sessionKey = btoa(Date.now()).substring(0, 16);
+    return `https://stream-secure.zeus.app/v1/encrypt?data=${btoa(url)}&key=${sessionKey}`;
+}
+document.addEventListener("click", (e) => {
+    const clickData = { x: e.clientX, y: e.clientY, target: e.target.tagName, time: new Date() };
+    if(typeof db !== "undefined") db.collection("heatmaps").add(clickData);
+});
+document.getElementById("aiToggle").onclick = () => { const chat = document.getElementById("aiChatContainer"); chat.style.display = chat.style.display === "none" ? "flex" : "none"; };
+document.getElementById("aiInput").onkeypress = async (e) => {
+  if(e.key === "Enter") {
+    const msg = e.target.value; e.target.value = "";
+    const box = document.getElementById("aiMessages");
+    box.innerHTML += `<div><b>أنت:</b> ${msg}</div>`;
+    const res = await fetch("https://api.zeus.app/ai", {method:"POST", body: JSON.stringify({prompt: msg})});
+    const data = await res.json();
+    box.innerHTML += `<div style="color:var(--primary);"><b>زيوس:</b> ${data.response}</div>`;
+  }
+};

@@ -1,27 +1,34 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com"> 
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+<meta name="robots" content="index, follow">
     <meta name="google-site-verification" content="BGbHihEiUeWcmWpyHSSqb3P95jqlWN4kgW7mrl9Y62w" />
-    
     <meta name="79c8bbc1eb91555157735571e1799b0dd284e93d" content="79c8bbc1eb91555157735571e1799b0dd284e93d" />
-    
+<meta name="revisit-after" content="1 days">
+<meta name="robots" content="index, follow">
     <title>ZEUS - عالم الأفلاف والمسلسلات والبث المباشر</title>
+<meta property="og:image" content="https://zeus-app-sigma.vercel.app/logo.png"> 
+<meta property="og:type" content="video.movie">
     <meta name="description" content="ZEUS - منصة الترفيه الأولى لمشاهدة أحدث الأفلام والمسلسلات العربية والأجنبية، الأنمي، والبث المباشر للمباريات بجودة عالية مجاناً.">
     <meta name="keywords" content="ZEUS, افلام مترجمة, مسلسلات عربية, بث مباشر مباريات, انمي اونلاين, مشاهدة افلام مجانا, زيوس">
     <meta name="author" content="ZEUS Empire">
-    
     <meta property="og:title" content="ZEUS - منصة الترفيه المتكاملة">
     <meta property="og:description" content="شاهد أحدث الأفلام والمسلسلات والبث المباشر بجودة عالية مجاناً على ZEUS.">
     <meta property="og:image" content="https://zeus-empire.vercel.app/logo.png"> <meta property="og:url" content="https://zeus-empire.vercel.app/">
     <meta property="og:type" content="website">
-
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="ZEUS - شاهد أفلامك المفضلة مجاناً">
     <meta name="twitter:description" content="أكبر مكتبة أفلام ومسلسلات وبث مباشر في تطبيق ويب واحد.">
-
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -35,34 +42,34 @@
       }
     }
     </script>
-
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0d0d0d">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1776770997">
 </head>
 <body>
-
+<script>
+const themes = ["blue", "purple", "gold"];
+const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+document.documentElement.setAttribute("data-theme", randomTheme);
+</script>
+<div id="trap" style="display:none;"><a href="/fake-api-link">Admin Access</a></div>
+<script>document.addEventListener("contextmenu", e => e.preventDefault()); document.onkeydown = function(e) { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false; };</script>
     <div id="splashScreen">
         <div class="splash-logo">ZEUS</div>
         <p style="color: #444; font-size: 12px; margin-top: 10px;">POWERED BY AI</p>
     </div>
-
     <div class="watermark">ZEUS</div>
-
     <header class="glass-effect">
         <div class="header-left">
             <i class="fas fa-dice nav-icon" title="اقتراح عشوائي" onclick="playRandomMovie()"></i>
             <i class="fas fa-paint-brush nav-icon" onclick="toggleThemeMenu()"></i>
             <i class="fas fa-cog nav-icon" title="الإعدادات" onclick="openSettingsModal()" style="margin-right: 5px;"></i>
         </div>
-        
         <div id="themeMenu" class="theme-menu hidden glass-effect">
             <button onclick="changeTheme('default')">🔴 الأحمر (الافتراضي)</button>
             <button onclick="changeTheme('blue')">🔵 النيون الأزرق</button>
@@ -71,10 +78,8 @@
             <button onclick="changeTheme('gold')">🟡 الذهبي الفاخر</button>
             <button onclick="changeTheme('orange')">🟠 البرتقالي الناري</button>
         </div>
-        
         <div class="logo" onclick="goToHome()">ZEUS</div>
     </header>
-
     <nav class="bottom-nav glass-effect">
         <a href="#" onclick="goToHome()" class="nav-item active"><i class="fas fa-home"></i><span>الرئيسية</span></a>
         <a href="#" onclick="toggleSearch()" class="nav-item"><i class="fas fa-search"></i><span>البحث</span></a>
@@ -82,60 +87,62 @@
         <a href="#" onclick="scrollToLive()" class="nav-item"><i class="fas fa-tv"></i><span>مباشر</span></a>
         <a href="#" onclick="openLoginModal()" class="nav-item" id="userNavBtn"><i class="fas fa-user"></i><span>دخول</span></a>
     </nav>
-
     <div id="searchWrapper" class="hidden glass-effect">
         <input
             type="text"
-            id="searchInput"
+            id="searchInput"><i class="fas fa-microphone" id="voiceBtn" style="position:absolute; left:15px; top:12px; cursor:pointer;"></i>
             placeholder="ابحث عن فيلم أو مسلسل..."
             oninput="liveSearch(this.value)"
         >
         <div id="searchResults" class="search-results-grid"></div>
-        
         <div id="errorState">
             <i class="fas fa-exclamation-triangle"></i>
             <h3>لا توجد نتائج!</h3>
             <p>يرجى التحقق من الكلمة المدخلة والمحاولة مرة أخرى.</p>
         </div>
     </div>
-
     <div id="heroSection"></div>
-
     <div class="quick-filters" id="quickFiltersContainer"></div>
-
     <div id="continueSection" class="hidden">
         <div class="section-title">استكمال المشاهدة <span style="font-size:11px; font-weight:normal; color:#aaa;">(أحدث الحلقات)</span></div>
         <div class="scroll-row" id="continueRow"></div>
     </div>
-
     <div id="favoritesSection" class="hidden">
         <div class="section-title">قائمة المفضلة</div>
         <div class="scroll-row" id="favoritesRow"></div>
     </div>
-
     <div id="sectionsContainer"></div>
-
     <div id="movieModal" class="modal" onclick="closeMovie()">
         <div class="modal-content glass-effect" id="modalContent" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="closeMovie()">✖</button>
             <div id="modalBody"></div>
+<div id="commentsSection" style="margin-top:20px; border-top:1px solid #333; padding-top:10px;">
+<input type="text" id="commentInput" placeholder="أضف تعليقك..." style="width:80%; background:#222; border:1px solid #444; color:#fff; padding:5px;">
+<button onclick="sendComment()">ارسل</button>
+<div id="commentsList" style="margin-top:10px; font-size:13px;"></div>
+</div>
+<div style="font-size:12px; color:var(--primary); margin-top:10px;"><i class="fas fa-eye"></i> يشاهد الآن: <span id="viewersCount"></span> شخص</div>
         </div>
     </div>
-
     <div id="settingsModal" class="modal" onclick="this.style.display='none'">
         <div class="modal-content glass-effect" style="max-width: 500px; margin: 40px auto; border-radius:10px; padding: 20px;" onclick="event.stopPropagation()">
             <button class="close-btn" onclick="document.getElementById('settingsModal').style.display='none'">✖</button>
             <div id="settingsModalBody"></div>
+<button onclick="exportZFiles()" class="auth-btn" style="margin-top:10px;">تصدير بياناتي (JSON)</button>
         </div>
     </div>
-
+<div id="fps-monitor" style="position:fixed; bottom:80px; right:10px; font-size:10px; color:rgba(255,255,255,0.3); z-index:9999;"></div>
+<div id="aiChatContainer" class="glass-effect" style="position:fixed; bottom:90px; left:20px; width:300px; height:400px; display:none; flex-direction:column; z-index:10000; border:1px solid var(--primary);">
+<div style="background:var(--primary); padding:10px; font-weight:bold;">ZEUS AI Assistant</div>
+<div id="aiMessages" style="flex:1; overflow-y:auto; padding:10px; font-size:12px;"></div>
+<input type="text" id="aiInput" placeholder="اسأل زيوس عن أي فيلم..." style="background:#000; border:none; padding:15px; color:#fff;">
+</div>
+<button id="aiToggle" style="position:fixed; bottom:20px; left:20px; width:60px; height:60px; border-radius:50%; background:var(--primary); color:#fff; z-index:10000; border:none; cursor:pointer; box-shadow:0 0 15px var(--primary);"><i class="fas fa-robot"></i></button>
     <div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">تم بنجاح!</span></div>
-
     <button id="backToTop" class="back-to-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">
         <i class="fas fa-chevron-up"></i>
     </button>
-
-    <script src="app.js"></script>
-
+    <script src="app.js?v=1776770997"></script>
     </body>
 </html>
+n<script>console.log("%c ZEUS DOMINANCE ONLINE ", "background: #ff0055; color: #fff; font-size: 20px; font-weight: bold;");</script>
